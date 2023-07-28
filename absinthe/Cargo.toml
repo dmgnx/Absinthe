@@ -1,13 +1,14 @@
 [package]
 name = "absinthe"
 version = "0.1.0"
+description = "Are you an Actor & Async junkie? Then your app needs some Absinthe!"
 
 license = "MIT OR Apache-2.0"
 authors = ["Dimitri Gence <dmgnx@proton.me>"]
+repository = "https://github.com/dmgnx/Absinthe"
 
 edition = "2021"
 
-publish = false
 
 
 [features]
@@ -21,7 +22,7 @@ async-std-runtime = ["async-std", "futures"]
 [dependencies]
 async-trait = "0.1.72"
 async-channel = "1.9.0"
-absinthe-macros = { path = "../absinthe-macros" }
+absinthe-macros = { version = "0.1.0", path = "../absinthe-macros" }
 
 tokio = { version = "1.29.1", features = ["sync", "rt"], optional = true }
 

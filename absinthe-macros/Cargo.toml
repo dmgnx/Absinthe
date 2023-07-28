@@ -1,13 +1,14 @@
 [package]
 name = "absinthe-macros"
 version = "0.1.0"
+description = "Macros for the Absinthe crate"
 
 license = "MIT OR Apache-2.0"
 authors = ["Dimitri Gence <dmgnx@proton.me>"]
+repository = "https://github.com/dmgnx/Absinthe"
 
 edition = "2021"
 
-publish = false
 
 
 
