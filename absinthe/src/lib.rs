@@ -1,10 +1,16 @@
 mod dev;
 pub mod prelude;
 pub mod actor;
+pub mod msg;
 
 
 
 pub use absinthe_macros::*;
-pub use actor::Actor;
-pub use actor::spawn;
-pub use actor::ActorHandle;
+pub use actor::{
+    Actor,
+    ActorHandle,
+    spawn,
+};
+pub use msg::{
+    Courier,
+};

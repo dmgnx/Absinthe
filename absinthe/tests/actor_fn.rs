@@ -2,11 +2,12 @@ use absinthe::prelude::*;
 
 #[tokio::test]
 async fn basic_function_fn_add() {
-    #[absinthe::actor]
-    async fn add(a: u32, b: u32) -> u32 {
-        a + b
+    actor! {
+        async fn add(a: u32, b: u32) -> u32 {
+            a + b
+        }
     }
-
+    
     let actor = add();
 
     assert_eq!(absinthe::send!(actor, 3, 2).await, 5);
@@ -14,11 +15,13 @@ async fn basic_function_fn_add() {
 
 #[tokio::test]
 async fn basic_function_fn_concat() {
-    #[absinthe::actor]
-    async fn concat(mut a: String, b: String) -> String {
-        a += &b;
-        a
+    actor! {
+        async fn concat(mut a: String, b: String) -> String {
+            a += &b;
+            a
+        }
     }
+    
 
     let actor = concat();
 
@@ -27,11 +30,12 @@ async fn basic_function_fn_concat() {
 
 #[tokio::test]
 async fn return_tuple() {
-    #[absinthe::actor]
-    async fn swap(a: u32, b: u32) -> (u32, u32) {
-        (b, a)
+    actor! {
+        async fn swap(a: u32, b: u32) -> (u32, u32) {
+            (b, a)
+        }
     }
-
+    
     let actor = swap();
 
     assert_eq!(absinthe::send!(actor, 3, 2).await, (2, 3));
@@ -39,11 +43,12 @@ async fn return_tuple() {
 
 #[tokio::test]
 async fn return_unit() {
-    #[absinthe::actor]
-    async fn print(a: u32) {
-        format!("{}", a);
+    actor! {
+        async fn print(a: u32) {
+            format!("{}", a);
+        }
     }
-
+    
     let actor = print();
 
     assert_eq!(absinthe::send!(actor, 3).await, ());
@@ -51,9 +56,10 @@ async fn return_unit() {
 
 #[tokio::test]
 async fn no_arg() {
-    #[absinthe::actor]
-    async fn print() {
-        format!("Hello, world!");
+    actor! {
+        async fn print() {
+            format!("Hello, world!");
+        }
     }
 
     let actor = print();
@@ -63,19 +69,22 @@ async fn no_arg() {
 
 #[tokio::test]
 async fn ping_pong() {
-    #[absinthe::actor]
-    async fn ping(count: u8, pong: ActorHandle<PongActorFn>) -> String {
-        for _ in 0..(count - 1) {
-            absinthe::notify!(pong).await;
+    actor! {
+        async fn ping(count: u8, pong: ActorHandle<PongActorFn>) -> String {
+            for _ in 0..(count - 1) {
+                absinthe::notify!(pong).await;
+            }
+    
+            absinthe::send!(pong).await
         }
-
-        absinthe::send!(pong).await
     }
-
-    #[absinthe::actor]
-    async fn pong() -> String {
-        "pong".to_string()
+    
+    actor! {
+        async fn pong() -> String {
+            "pong".to_string()
+        }
     }
+    
 
     let ping = ping();
     let pong = pong();
@@ -85,18 +94,20 @@ async fn ping_pong() {
 
 #[tokio::test]
 async fn generic() {
-    #[absinthe::actor]
-    async fn add<T: std::ops::Add<Output = T>>(a: T, b: T) -> T {
-        a + b
+    actor! {
+        async fn add<T: std::ops::Add<Output = T>>(a: T, b: T) -> T {
+            a + b
+        }
     }
-
-    #[absinthe::actor]
-    async fn sub<T> (a: T, b: T) -> T
-    where
-        T: std::ops::Sub<Output = T>,
-    {
-        a - b
-    }
+    
+    actor! {
+        async fn sub<T> (a: T, b: T) -> T
+        where
+            T: std::ops::Sub<Output = T>,
+        {
+            a - b
+        }
+    }    
 
     let add_u8 = add::<u8>();
     let sub_u32 = sub::<u32>();

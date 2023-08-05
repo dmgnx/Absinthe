@@ -10,6 +10,10 @@ pub mod prelude {
     pub use super::async_rt::*;
 
     pub use crate::prelude::*;
+
+    pub use std::future::Future;
+    pub use std::pin::Pin;
+    pub use std::marker::PhantomData;
 }
 
 #[cfg(feature = "tokio-runtime")]

@@ -4,7 +4,9 @@ mod actorizer;
 
 
 use actorizer::function::ActorizeFn;
+use actorizer::structure::ActorizeStruct;
 use dev::prelude::*;
+use syn::File;
 
 
 
@@ -42,24 +44,19 @@ pub fn notify(input: TokenStream) -> TokenStream {
     expanded.into()
 }
 
-#[proc_macro_attribute]
-pub fn actor(_attr: TokenStream, input: TokenStream) -> TokenStream {
-    let input_act = input.clone();
-    let input_act = parse_macro_input!(input_act as Item);
+#[proc_macro]
+pub fn actor(input: TokenStream) -> TokenStream {
+    let section = input.clone();
+    let section = parse_macro_input!(section as File);
 
-    match &input_act {
-        Item::Fn(_) => {
-            actor_fn(_attr, input)
+    match section.items.first().unwrap() {
+        Item::Struct(_) => {
+            parse_macro_input!(input as ActorizeStruct).into()
         },
-        _ => {
-            return syn::Error::new_spanned(input_act, "The `actor` attribute could not resolve the following block as an actor!")
-                .to_compile_error()
-                .into();
-        }
-    }
-}
+        Item::Fn(_) => {
+            parse_macro_input!(input as ActorizeFn).into()
 
-#[proc_macro_attribute]
-pub fn actor_fn(_attr: TokenStream, input: TokenStream) -> TokenStream {
-    parse_macro_input!(input as ActorizeFn).into()
+        },
+        _ => syn::Error::new_spanned::<TokenStream2, _>(input.into(), "Expected `struct` or `fn`").to_compile_error().into()
+    }
 }

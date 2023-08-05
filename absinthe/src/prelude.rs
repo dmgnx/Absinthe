@@ -7,6 +7,8 @@ pub use crate::actor::{
     ActorHandle,
 };
 
-
+pub use crate::msg::{
+    Courier,
+};
 
 pub use absinthe_macros::*;

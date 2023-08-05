@@ -30,6 +30,7 @@ impl ToTokens for ActorizeFn {
     fn to_tokens(&self, tokens: &mut TokenStream2) {
         let fn_impl = &self.0;
 
+        let vis = &fn_impl.vis;
         let fn_name = &fn_impl.sig.ident;
         let struct_name = format_ident!("{}ActorFn", heck::AsUpperCamelCase(fn_name.to_string()).to_string());
 
@@ -140,7 +141,7 @@ impl ToTokens for ActorizeFn {
 
 
         let output = quote! {
-            struct #struct_name #generics 
+            #vis struct #struct_name #generics 
             #where_clause 
             #struct_def
 
@@ -156,18 +157,18 @@ impl ToTokens for ActorizeFn {
             }
 
             #[absinthe::prelude::async_trait]
-            impl #generics Actor for #struct_name #generic_params  
+            impl #generics absinth::Actor for #struct_name #generic_params  
             #where_clause
             {
                 type Request  = #fn_args_t;
                 type Response = #fn_ret;
 
-                async fn recv_msg(&self, req: Self::Request) -> Self::Response {
+                async fn recv_msg(&mut self, req: Self::Request) -> Self::Response {
                     Self::#fn_name(#fn_args_unpack).await
                 }
             }
 
-            fn #fn_name #generics () -> absinthe::actor::ActorHandle<#struct_name #generic_params> #where_clause {
+            #vis fn #fn_name #generics () -> absinthe::actor::ActorHandle<#struct_name #generic_params> #where_clause {
                 let actor = #struct_name::new();
                 absinthe::spawn(actor)
             }

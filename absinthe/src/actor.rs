@@ -2,7 +2,7 @@ use crate::dev::prelude::*;
 
 
 
-pub fn spawn<A>(actor: A) -> ActorHandle<A>
+pub fn spawn<A>(mut actor: A) -> ActorHandle<A>
 where
     A: Actor,
 {
@@ -29,14 +29,12 @@ where
     }
 }
 
-
-
 #[async_trait]
 pub trait Actor   : Send + Sync + 'static {
     type Request  : Send;
     type Response : Send;
 
-    async fn recv_msg(&self, req: Self::Request) -> Self::Response;
+    async fn recv_msg(&mut self, req: Self::Request) -> Self::Response;
 }
 
 
@@ -48,17 +46,17 @@ pub struct ActorHandle<A>
     tx: Tx<(A::Request, Option<Tx1<A::Response>>)>,
 }
 
-impl<A> ActorHandle<A> 
+#[async_trait]
+impl<A> Courier<A> for ActorHandle<A> 
     where A: Actor,
 {
-    pub async fn send_msg(&self, req: A::Request) -> A::Response {
+    async fn send_msg(&self, req: A::Request) -> A::Response {
         let (tx1, rx1) = chan1();
         let _ = self.tx.send((req, Some(tx1))).await;
         rx1.await.unwrap()
     }
 
-    pub async fn notify_msg(&self, req: A::Request) {
+    async fn notify_msg(&self, req: A::Request) {
         let _ = self.tx.send((req, None)).await;
     }
 }
-

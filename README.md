@@ -42,21 +42,17 @@ async fn main() {
 
 - [x] Actor functions 
 - [x] Generic Actor functions
-- [ ] Tracing
-- [ ] Blocking Actor functions
-- [ ] Topic based Actor binding
-- [ ] Structs as Actor context
-- [ ] Context Actor methods
-- [ ] Actor lifecycle trait
 - [ ] Lambda Actor wrapper
+- [ ] Actor functions with context
+- [ ] Actor Structs
+- [ ] Actor Structs with generics
+- [ ] Actor replicas
 - [ ] Actor supervision
-- [ ] Multi-instance actors
-- [ ] Circuit breaker
+- [ ] Documentation
+- [ ] Examples
+- [ ] Tracing
 - [ ] UDP bridge
-- [ ] Ciphered tunnel
-- [ ] Actor Healthcheck
-- [ ] Node Healthcheck
-- [ ] Actor discovery
-- [ ] Actor discovery with UDP
+- [ ] UDP bridge Ciphered tunnel
+- [ ] UDP bridge Node Healthcheck
 - [ ] RabbitMQ bridge
 - [ ] Stomp bridge
