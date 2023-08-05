@@ -89,8 +89,6 @@ async fn main() {
 - [ ] Actor Structs with generics
 - [ ] Actor replicas
 - [ ] Actor supervision
-- [ ] Documentation
-- [ ] Examples
 - [ ] Tracing
 - [ ] UDP bridge
 - [ ] UDP bridge Ciphered tunnel
