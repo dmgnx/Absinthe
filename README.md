@@ -76,8 +76,6 @@ async fn main() {
     // Request and Response enums are generated for each actor, based on #[act] functions
     let res = absinthe::send!(counter, CounterReq::Inc).await;
     let res = absinthe::send!(counter, CounterReq::Dec).await;
-
-    assert_eq!(res, 1);
 }
 
 ```

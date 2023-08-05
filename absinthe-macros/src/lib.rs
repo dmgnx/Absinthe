@@ -1,5 +1,21 @@
+//! # Absinthe Macros
+//! 
+//! Absinthe Macros is a library that provides macros for Absinthe.
+//! 
+//! ## Features
+//! 
+//! - **actor!** - The actor! macro can be used to 'actorize' functions & structs.
+//! - **send!** - The send! macro can be used to send a message to an actor, and wait for a response.
+//! - **notify!** - The notify! macro can be used to send a message to an actor, and don't wait for a response.
+//! 
+
+/// Module used for Absinthe's own development.
 mod dev;
+
+/// send! and notify! argument parsing.
 mod msg;
+
+/// actor! parsing and actorization.
 mod actorizer;
 
 
@@ -9,7 +25,7 @@ use dev::prelude::*;
 use syn::File;
 
 
-
+/// Send a message to an actor, and wait for a response.
 #[proc_macro]
 pub fn send(input: TokenStream) -> TokenStream {
     let MsgSend { actor, payload } = parse_macro_input!(input as MsgSend);
@@ -27,6 +43,7 @@ pub fn send(input: TokenStream) -> TokenStream {
     expanded.into()
 }
 
+/// Send a message to an actor, and don't wait for a response.
 #[proc_macro]
 pub fn notify(input: TokenStream) -> TokenStream {
     let MsgSend { actor, payload } = parse_macro_input!(input as MsgSend);
@@ -44,6 +61,10 @@ pub fn notify(input: TokenStream) -> TokenStream {
     expanded.into()
 }
 
+/// Create an actor.
+/// Can be used on a struct or a function.
+/// If actorizing a struct, the struct must have an `impl` block.
+/// The `impl` block must have the same name as the struct.
 #[proc_macro]
 pub fn actor(input: TokenStream) -> TokenStream {
     let section = input.clone();
