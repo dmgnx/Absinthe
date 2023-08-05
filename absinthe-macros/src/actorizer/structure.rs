@@ -1,6 +1,4 @@
-use syn::{parenthesized, LitStr};
-
-use crate::{dev::prelude::*, msg};
+use crate::dev::prelude::*;
 
 
 pub struct ActorizeStruct(ItemStruct, ItemImpl);

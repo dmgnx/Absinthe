@@ -42,8 +42,16 @@ pub trait Actor   : Send + Sync + 'static {
 pub struct ActorHandle<A> 
     where A: Actor,
 {
-    task: TaskHandle<()>,
+    pub task: TaskHandle<()>,
     tx: Tx<(A::Request, Option<Tx1<A::Response>>)>,
+}
+
+impl<A> Drop for ActorHandle<A> 
+    where A: Actor,
+{
+    fn drop(&mut self) {
+        let _ = self.tx.close();
+    }
 }
 
 #[async_trait]

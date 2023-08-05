@@ -11,6 +11,4 @@ pub use actor::{
     ActorHandle,
     spawn,
 };
-pub use msg::{
-    Courier,
-};
+pub use crate::msg::Courier;

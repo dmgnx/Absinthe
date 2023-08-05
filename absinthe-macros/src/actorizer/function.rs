@@ -157,7 +157,7 @@ impl ToTokens for ActorizeFn {
             }
 
             #[absinthe::prelude::async_trait]
-            impl #generics absinth::Actor for #struct_name #generic_params  
+            impl #generics absinthe::Actor for #struct_name #generic_params  
             #where_clause
             {
                 type Request  = #fn_args_t;

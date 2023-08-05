@@ -14,6 +14,7 @@ pub mod prelude {
     };
     
     pub use syn::{
+        parenthesized,
         parse_macro_input, 
         Token,
         AngleBracketedGenericArguments,
