@@ -1,13 +1,7 @@
 use crate::dev::prelude::*;
+use crate::model::send::SendModel;
 
-
-
-pub struct MsgSend {
-    pub actor: Expr,
-    pub payload: Vec<Expr>,
-}
-
-impl Parse for MsgSend {
+impl Parse for SendModel {
     fn parse(input: ParseStream) -> syn::Result<Self> {
         let actor: Expr = input.parse()?;
         let payload = match input.parse::<Token![,]>() {
@@ -17,6 +11,6 @@ impl Parse for MsgSend {
             Err(_) => vec![],
         };
         
-        Ok(MsgSend { actor, payload })
+        Ok(SendModel { actor, payload })
     }
 }

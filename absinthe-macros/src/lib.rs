@@ -12,72 +12,44 @@
 /// Module used for Absinthe's own development.
 mod dev;
 
-/// send! and notify! argument parsing.
-mod msg;
+mod model;
+mod parser;
+mod codegen;
 
-/// actor! parsing and actorization.
-mod actorizer;
+use proc_macro::TokenStream;
 
+use crate::codegen::*;
+use crate::model::*;
 
-use actorizer::function::ActorizeFn;
-use actorizer::structure::ActorizeStruct;
-use dev::prelude::*;
-use syn::File;
+#[proc_macro_attribute]
+pub fn main(attr: TokenStream, input: TokenStream) -> TokenStream {
+    CodeGen::codegen::<MainFnAttrModel, MainFnModel, MainFnCodeGen>(Some(attr.into()), input.into()).into()
+}
 
+#[proc_macro_attribute]
+pub fn test(attr: TokenStream, input: TokenStream) -> TokenStream {
+    CodeGen::codegen::<TestFnAttrModel, TestFnModel, TestFnCodeGen>(Some(attr.into()), input.into()).into()
+}
+
+#[proc_macro_attribute]
+pub fn actor_fn(attr: TokenStream, input: TokenStream) -> TokenStream {
+    CodeGen::codegen::<ActorFnAttrModel, ActorFnModel, ActorFnCodeGen>(Some(attr.into()), input.into()).into()
+}
+
+#[proc_macro_attribute]
+pub fn actor_impl(attr: TokenStream, input: TokenStream) -> TokenStream {
+    CodeGen::codegen::<ActorImplAttrModel, ActorImplModel, ActorImplCodeGen>(Some(attr.into()), input.into()).into()
+}
 
 /// Send a message to an actor, and wait for a response.
 #[proc_macro]
 pub fn send(input: TokenStream) -> TokenStream {
-    let MsgSend { actor, payload } = parse_macro_input!(input as MsgSend);
-
-    let payload = if payload.len() == 0 {
-        quote!(())
-    } else {
-        quote!((#(#payload),*))
-    };
-
-    let expanded = quote! {
-        #actor.send_msg(#payload)
-    };
-
-    expanded.into()
+    CodeGen::codegen::<NoAttrModel, SendModel, SendCodeGen>(None, input.into()).into()
 }
 
 /// Send a message to an actor, and don't wait for a response.
 #[proc_macro]
 pub fn notify(input: TokenStream) -> TokenStream {
-    let MsgSend { actor, payload } = parse_macro_input!(input as MsgSend);
-
-    let payload = if payload.len() == 0 {
-        quote!(())
-    } else {
-        quote!((#(#payload),*))
-    };
-
-    let expanded = quote! {
-        #actor.notify_msg(#payload)
-    };
-
-    expanded.into()
+    CodeGen::codegen::<NoAttrModel, NotifyModel, NotifyCodeGen>(None, input.into()).into()
 }
 
-/// Create an actor.
-/// Can be used on a struct or a function.
-/// If actorizing a struct, the struct must have an `impl` block.
-/// The `impl` block must have the same name as the struct.
-#[proc_macro]
-pub fn actor(input: TokenStream) -> TokenStream {
-    let section = input.clone();
-    let section = parse_macro_input!(section as File);
-
-    match section.items.first().unwrap() {
-        Item::Struct(_) => {
-            parse_macro_input!(input as ActorizeStruct).into()
-        },
-        Item::Fn(_) => {
-            parse_macro_input!(input as ActorizeFn).into()
-
-        },
-        _ => syn::Error::new_spanned::<TokenStream2, _>(input.into(), "Expected `struct` or `fn`").to_compile_error().into()
-    }
-}
