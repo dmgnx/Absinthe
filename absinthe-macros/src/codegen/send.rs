@@ -3,8 +3,9 @@ use crate::dev::prelude::*;
 mod model {
     use crate::dev::prelude::*;
 
+    #[derive(Clone)]
     pub struct SendModel {
-        pub actor: Expr,
+        pub courier: Expr,
         pub payload: Vec<Expr>,
     }
 }
@@ -14,7 +15,7 @@ mod parser {
 
     impl Parse for SendModel {
         fn parse(input: ParseStream) -> syn::Result<Self> {
-            let actor: Expr = input.parse()?;
+            let courier: Expr = input.parse()?;
             let payload = match input.parse::<Token![,]>() {
                 Ok(_) => {
                     input.parse_terminated(Expr::parse, Token!(,))?.into_iter().collect()
@@ -22,7 +23,7 @@ mod parser {
                 Err(_) => vec![],
             };
             
-            Ok(SendModel { actor, payload })
+            Ok(SendModel { courier, payload })
         }
     }
 }
@@ -37,7 +38,11 @@ impl ICodeGen for SendCodeGen {
     type AttrModel = NoAttrModel;
     type Model = SendModel;
 
-    fn codegen(attr: Option<Self::AttrModel>, model: Self::Model) -> TokenStream {
-        quote!()
+    fn codegen(_attr: Option<Self::AttrModel>, model: Self::Model) -> TokenStream {
+        let SendModel { courier, payload } = model;
+        
+        quote!{
+            #courier.send((#(#payload),*))
+        }
     }
 }

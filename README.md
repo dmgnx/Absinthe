@@ -14,68 +14,56 @@ Just write your Rust code, and Absinthe will handle the rest.
 use absinthe::prelude::*;
 
 // Actorize any async function with the #[absinthe::actor] attribute
-actor! {
-    async fn add(a: i32, b: i32) -> i32 {
-        a + b
-    }
+#[absinthe::actor]
+async fn add(a: i32, b: i32) -> i32 {
+    a + b
 }
+
 
 // It works with generics too!
 // Don't think about async requirements, Absinthe will handle it for you
-actor! {
-    async fn sub<T>(a: T, b: T) 
-    where 
-        T: std::ops::Sub<Output = i32>
-    {
-        a - b
-    }
+#[absinthe::actor]
+async fn sub<T>(a: T, b: T) 
+where 
+    T: std::ops::Sub<Output = i32>
+{
+    a - b
 }
 
-// OMG ! It works with structs too!
-actor! {
-    struct Counter {
-        count: u32,
+// You can also create actors with a state, accessible from `self`
+#[absinthe::actor]
+async fn counter(&mut self, inc: u32) -> u32 {
+    struct State {
+        count: u32
     }
 
-    impl Counter {
-        fn new() -> Self {
-            Self {
-                count: 0,
-            }
-        }
-
-        // Functions routed to the actor are marked with the #[act] attribute
-        // By default, the function name is used as the message name, but you can override it
-        // with the msg() attribute
-        #[act(msg(inc))]
-        async fn increment(&mut self) -> u32 {
-            self.count += 1;
-            self.count
-        }
-
-        #[act(msg(dec))]
-        async fn decrement(&mut self) -> u32 {
-            self.count -= 1;
-            self.count
-        }
-    }
+    self.count += inc;
+    self.count
 }
 
 #[tokio::main]
 async fn main() {
-    let add_actor = add();
-    let sub_actor = sub::<i32>();
-    let counter = Counter::new();
-    let counter = absinthe::spawn(counter);
+    // Every story starts with a supervisor
+    let supv = Supervisor::new();
 
-    // send! a message to the actor, and await the response
-    // notify! the actor when you don't care about the response
-    let res = absinthe::send!(add_actor, 1, 2).await;
-    let res = absinthe::send!(sub_actor, res, 2).await;
+    let add = supv.spawn::<AddActor>("add");
+    let sub = supv.spawn::<SubActor<u128>>("sub");
+    let counter = supv.spawn::<CounterActor>("counter");
 
-    // Request and Response enums are generated for each actor, based on #[act] functions
-    let res = absinthe::send!(counter, CounterReq::Inc).await;
-    let res = absinthe::send!(counter, CounterReq::Dec).await;
+    // Send messages to actors
+    assert_eq!(send!(add, 1, 2).await, 3);
+    assert_eq!(send!(sub, 2u128, 1u128).await, 1u128);
+    assert_eq!(send!(counter, 1).await, 1);
+    assert_eq!(send!(counter, 1).await, 2);
+    assert_eq!(send!(counter, 1).await, 3);
+
+    // You can actorize closures too! (But it's blocking code until async closures are stable)
+    let add = ActorClosure::new(|msg: (i32, i32)| { 
+        let (a, b) = msg;
+        a + b
+    });
+    let add = supv.deploy(add, "add");
+    assert_eq!(send!(add, 1, 2).await, 3);
 }
 
 ```
@@ -84,12 +72,11 @@ async fn main() {
 
 - [x] Actor functions 
 - [x] Generic Actor functions
-- [ ] Lambda Actor wrapper
-- [x] Actor Structs
-- [ ] Actor Structs with generics
+- [x] Closure Actor wrapper
+- [x] Tracing
+- [~] Supervisor
+- [ ] Starter (Supervising Actor)
 - [ ] Actor replicas
-- [ ] Actor supervision
-- [ ] Tracing
 - [ ] UDP bridge
 - [ ] UDP bridge Ciphered tunnel
 - [ ] UDP bridge Node Healthcheck

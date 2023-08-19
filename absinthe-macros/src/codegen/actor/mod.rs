@@ -157,7 +157,7 @@ impl ICodeGen for ActorCodeGen
         };
 
         let start_fn = quote! {
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self {
                     #new_actor_state
                     #new_phantom_gen

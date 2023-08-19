@@ -1,12 +1,12 @@
 pub use async_trait::async_trait;
 
-
-
-pub use crate::actor::{
-    Actor,
-    ActorHandle,
+pub use crate::supervisor::Supervisor;
+pub use crate::actor::Actor;
+pub use crate::error::Error;
+pub use crate::courier::{
+    ICourier,
+    Courier,
+    ActorCourier,
 };
-
-pub use crate::msg::Courier;
 
 pub use absinthe_macros::*;

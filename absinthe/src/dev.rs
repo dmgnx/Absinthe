@@ -1,6 +1,10 @@
 pub mod prelude {
+    pub use std::sync::Arc;
+
     pub use async_trait::async_trait;
     
+    pub use tracing::*;
+
     pub use async_channel::{
         unbounded as chan,
         Sender as Tx,
@@ -14,18 +18,13 @@ pub mod prelude {
     pub use std::future::Future;
     pub use std::pin::Pin;
     pub use std::marker::PhantomData;
+    pub use futures::future::FutureExt;
 }
 
 #[cfg(feature = "tokio-runtime")]
 pub mod async_rt {
+    pub use tokio::select as select;
     pub use tokio::spawn as task;
     pub use tokio::task::JoinHandle as TaskHandle;
     pub use tokio::sync::oneshot::{channel as chan1, Sender as Tx1, Receiver as Rx1};
-}
-
-#[cfg(feature = "async-std-runtime")]
-pub mod async_rt {
-    pub use async_std::task::spawn as task;
-    pub use async_std::task::JoinHandle as TaskHandle;
-    pub use futures::channel::oneshot::{channel as chan1, Sender as Tx1, Receiver as Rx1};   
 }

@@ -27,7 +27,7 @@ fn test_actor_fn() {
                 Self::add(msg.0, msg.1).await
             }
 
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self { })
             }
         }
@@ -70,7 +70,7 @@ fn test_actor_fn_with_name() {
                 Self::add(msg.0, msg.1).await
             }
 
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self { })
             }
         }
@@ -120,7 +120,7 @@ fn test_actor_fn_generic_add_function() {
                 Self::add(msg.0, msg.1).await
             }
 
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self {
                     _phantom_gen: std::marker::PhantomData ,
                 })
@@ -175,7 +175,7 @@ fn test_actor_fn_generic_swap_function() {
                 Self::swap(msg.0, msg.1).await
             }
 
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self {
                     _phantom_gen: std::marker::PhantomData ,
                 })
@@ -216,7 +216,7 @@ fn test_actor_fn_do_nothing() {
                 Self::do_nothing().await
             }
 
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self { })
             }
         }
@@ -262,7 +262,7 @@ fn test_actor_fn_counter_with_state() {
                 Self::counter(self, msg).await
             }
 
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self {
                     count: 0,
                 })
@@ -320,7 +320,7 @@ fn test_actor_fn_generic_counter_with_state() {
                 Self::counter(self, msg).await
             }
 
-            async fn start() -> Result<Self, absinthe::ActorError> {
+            async fn start() -> Result<Self, absinthe::Error> {
                 Ok(Self {
                     count: T::default(),
                     _phantom_gen: std::marker::PhantomData,

@@ -19,16 +19,6 @@ use proc_macro::TokenStream;
 use crate::codegen::*;
 
 #[proc_macro_attribute]
-pub fn main(attr: TokenStream, input: TokenStream) -> TokenStream {
-    CodeGen::codegen::<MainFnCodeGen>(Some(attr.into()), input.into()).into()
-}
-
-#[proc_macro_attribute]
-pub fn test(attr: TokenStream, input: TokenStream) -> TokenStream {
-    CodeGen::codegen::<TestFnCodeGen>(Some(attr.into()), input.into()).into()
-}
-
-#[proc_macro_attribute]
 pub fn actor(attr: TokenStream, input: TokenStream) -> TokenStream {
     CodeGen::codegen::<ActorCodeGen>(Some(attr.into()), input.into()).into()
 }
@@ -43,5 +33,10 @@ pub fn send(input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn notify(input: TokenStream) -> TokenStream {
     CodeGen::codegen::<NotifyCodeGen>(None, input.into()).into()
+}
+
+#[proc_macro]
+pub fn oneshot(input: TokenStream) -> TokenStream {
+    CodeGen::codegen::<OneshotCodeGen>(None, input.into()).into()
 }
 

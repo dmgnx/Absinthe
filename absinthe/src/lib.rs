@@ -37,18 +37,20 @@ mod dev;
 /// Absinthe prelude, providing a good starter pack to start writing actors.
 pub mod prelude;
 
+pub mod error;
+pub mod supervisor;
+
 /// Actor traits & primitives.
 pub mod actor;
 
-/// Message traits & primitives.
-pub mod msg;
 
-pub use actor::{
-    Actor,
-    ActorHandle,
-    spawn,
-};
-pub use crate::msg::Courier;
+
+/// Message traits & primitives.
+pub mod courier;
+
+pub use crate::error::Error;
+pub use crate::actor::Actor;
+pub use crate::courier::Courier;
 
 /// Provides the actor! macro, which 'actorizes' functions & structs.
 /// Also provides messaging macros, such as send! and notify!

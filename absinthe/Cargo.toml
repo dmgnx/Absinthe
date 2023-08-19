@@ -12,11 +12,11 @@ edition = "2021"
 
 
 [features]
-default = ["tokio-runtime"]
+default = ["full"]
+full = ["tokio-runtime", "test"]
 
+test = [] 
 tokio-runtime = ["tokio"]
-async-std-runtime = ["async-std", "futures"]
-
 
 
 [dependencies]
@@ -25,9 +25,10 @@ async-channel = "1.9.0"
 absinthe-macros = { version = "0.3.0", path = "../absinthe-macros" }
 
 tokio = { version = "1.29.1", features = ["sync", "rt"], optional = true }
-
-async-std = { version = "1.12.0", optional = true }
-futures = { version = "0.3.28", optional = true }
+thiserror = "1.0.47"
+petgraph = "0.6.3"
+futures = "0.3.28"
+tracing = "0.1.37"
 
 
 

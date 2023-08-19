@@ -1,14 +1,12 @@
-mod main;
-mod test;
 mod actor;
 mod send;
 mod notify;
+mod oneshot;
 
-pub use main::*;
-pub use test::*;
 pub use actor::*;
 pub use send::*;
 pub use notify::*;
+pub use oneshot::*;
 
 use crate::dev::prelude::*;
 

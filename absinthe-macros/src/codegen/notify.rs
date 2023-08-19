@@ -4,9 +4,7 @@ use crate::dev::prelude::*;
 mod model {
     use crate::dev::prelude::*;
 
-    pub struct NotifyModel {
-
-    }
+    pub struct NotifyModel(pub SendModel);
 }
 
 mod parser {
@@ -14,7 +12,9 @@ mod parser {
 
     impl Parse for NotifyModel {
         fn parse(input: ParseStream) -> syn::Result<Self> {
-            Ok(Self{})
+            let model = input.parse::<SendModel>()?;
+
+            Ok(NotifyModel(model))
         }
     }
 }
@@ -30,6 +30,12 @@ impl ICodeGen for NotifyCodeGen {
     type Model = NotifyModel;
 
     fn codegen(attr: Option<Self::AttrModel>, model: Self::Model) -> TokenStream {
-        quote!()
+        let NotifyModel(model) = model;
+
+        let SendModel { courier, payload } = model;
+        
+        quote!{
+            #courier.notify((#(#payload),*))
+        }
     }
 }
