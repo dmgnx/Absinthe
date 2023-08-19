@@ -1,6 +1,34 @@
 use crate::dev::prelude::*;
 
-use crate::model::main::*;
+mod model {
+    use crate::dev::prelude::*;
+
+    pub struct MainFnAttrModel {
+
+    }
+
+    pub struct MainFnModel {
+
+    }
+}
+
+mod parser {
+    use crate::dev::prelude::*;
+
+    impl Parse for MainFnAttrModel {
+        fn parse(input: ParseStream) -> syn::Result<Self> {
+            Ok(Self{})
+        }
+    }
+    
+    impl Parse for MainFnModel {
+        fn parse(input: ParseStream) -> syn::Result<Self> {
+            Ok(Self{})
+        }
+    }
+}
+
+pub use model::*;
 
 use super::ICodeGen;
 
@@ -10,7 +38,7 @@ impl ICodeGen for MainFnCodeGen {
     type AttrModel = MainFnAttrModel;
     type Model = MainFnModel;
 
-    fn codegen(attr: &Option<Self::AttrModel>, model: &Self::Model) -> TokenStream {
+    fn codegen(attr: Option<Self::AttrModel>, model: Self::Model) -> TokenStream {
         quote!()
     }
 }
@@ -18,7 +46,6 @@ impl ICodeGen for MainFnCodeGen {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dev::prelude::*;
 
     #[test]
     fn test_main_fn_codegen() {
@@ -46,7 +73,7 @@ mod tests {
 
     assert_eq!(
         expected.to_string(),
-        CodeGen::codegen::<MainFnAttrModel, MainFnModel, MainFnCodeGen>(Some(attr), input).to_string()
+        CodeGen::codegen::<MainFnCodeGen>(Some(attr), input).to_string()
     )
 }
 }

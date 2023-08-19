@@ -1,6 +1,34 @@
 use crate::dev::prelude::*;
 
-use crate::model::test::*;
+mod model {
+    use crate::dev::prelude::*;
+
+    pub struct TestFnAttrModel {
+
+    }
+
+    pub struct TestFnModel {
+
+    }
+}
+
+mod parser {
+    use crate::dev::prelude::*;
+
+    impl Parse for TestFnAttrModel {
+        fn parse(input: ParseStream) -> syn::Result<Self> {
+            Ok(Self{})
+        }
+    }
+    
+    impl Parse for TestFnModel {
+        fn parse(input: ParseStream) -> syn::Result<Self> {
+            Ok(Self{})
+        }
+    }
+}
+
+pub use model::*;
 
 use super::ICodeGen;
 
@@ -10,7 +38,7 @@ impl ICodeGen for TestFnCodeGen {
     type AttrModel = TestFnAttrModel;
     type Model = TestFnModel;
 
-    fn codegen(attr: &Option<Self::AttrModel>, model: &Self::Model) -> TokenStream {
+    fn codegen(attr: Option<Self::AttrModel>, model: Self::Model) -> TokenStream {
         quote!()
     }
 }
@@ -18,7 +46,6 @@ impl ICodeGen for TestFnCodeGen {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dev::prelude::*;
 
     #[test]
     fn test_test_fn() {
@@ -46,7 +73,7 @@ mod tests {
 
         assert_eq!(
             expected.to_string(),
-            CodeGen::codegen::<TestFnAttrModel, TestFnModel, TestFnCodeGen>(Some(attr.into()), input.into()).to_string()
+            CodeGen::codegen::<TestFnCodeGen>(Some(attr.into()), input.into()).to_string()
         )
     }
 }

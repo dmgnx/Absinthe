@@ -1,14 +1,12 @@
 mod main;
 mod test;
-mod actor_fn;
-mod actor_impl;
+mod actor;
 mod send;
 mod notify;
 
 pub use main::*;
 pub use test::*;
-pub use actor_fn::*;
-pub use actor_impl::*;
+pub use actor::*;
 pub use send::*;
 pub use notify::*;
 
@@ -18,20 +16,28 @@ pub trait ICodeGen {
     type AttrModel;
     type Model;
 
-    fn codegen(attr: &Option<Self::AttrModel>, model: &Self::Model) -> TokenStream;
+    fn codegen(attr: Option<Self::AttrModel>, model: Self::Model) -> TokenStream;
+}
+
+pub struct NoAttrModel;
+
+impl Parse for NoAttrModel {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        Ok(Self{})
+    }
 }
 
 pub struct CodeGen;
 
 impl CodeGen {
-    pub fn codegen<AttrModel, Model, Gen>(attr: Option<TokenStream>, input: TokenStream) -> TokenStream
+    pub fn codegen<Gen>(attr: Option<TokenStream>, input: TokenStream) -> TokenStream
     where
-        AttrModel: Parse,
-        Model: Parse,
-        Gen: ICodeGen<AttrModel = AttrModel, Model = Model>,
+        Gen: ICodeGen,
+        Gen::AttrModel: Parse,
+        Gen::Model: Parse,
     {
         let attr = if attr.is_some() {
-            match syn::parse2::<AttrModel>(attr.unwrap()) {
+            match syn::parse2::<Gen::AttrModel>(attr.unwrap()) {
                 Ok(attr) => Some(attr),
                 Err(err) => return err.to_compile_error().into(),
             }
@@ -39,11 +45,11 @@ impl CodeGen {
             None
         };
 
-        let model = match syn::parse2::<Model>(input) {
+        let model = match syn::parse2::<Gen::Model>(input) {
             Ok(model) => model,
             Err(err) => return err.to_compile_error().into(),
         };
 
-        Gen::codegen(&attr, &model)
+        Gen::codegen(attr, model)
     }
 }
